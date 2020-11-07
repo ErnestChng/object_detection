@@ -40,6 +40,14 @@ INTERESTED_CLASSES = [
     b'Woman'
 ]
 
+#### DIRECTORIES
+INPUT_L_DIR = "input/local"
+INPUT_O_DIR = "input/online"
+OUTPUT_L_DIR = "output/local"
+OUTPUT_O_DIR = "output/online"
+
+DIR = [INPUT_L_DIR, INPUT_O_DIR, OUTPUT_L_DIR, OUTPUT_O_DIR]
+
 
 class ObjectDetector:
     """
@@ -53,10 +61,10 @@ class ObjectDetector:
         print('Checking setup...\n')
         self.check_setup()
 
-        print('\nLoading module from TF hub...')
+        print("\nLoading module from TF hub...")
         module_handle = MODULES['mobilenet']
         self.detector = hub.load(module_handle).signatures['default']
-        print('Module successfully loaded\n')
+        print("Module successfully loaded\n")
 
     @staticmethod
     def check_setup() -> None:
@@ -70,7 +78,14 @@ class ObjectDetector:
 
         # check available GPUs in the system
         gpu = tf.test.gpu_device_name()
-        print('No GPU devices are available') if gpu == '' else print(f"The following GPU devices are available: {gpu}")
+        print("No GPU devices are available") if gpu == '' else print(f"The following GPU devices are available: {gpu}")
+
+        # check if input and output directories are present
+        print("\nChecking if input and output directories are present...")
+        for directory in DIR:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+                print(f"{directory} was created")
 
     @staticmethod
     def display_image(image: Image) -> None:
