@@ -50,9 +50,9 @@ Launches a basic Flask App. The detect route requires users to specify ?url= whi
 
 ## Sample Output
 
-![photo_name](output/local/example1.jpg)
+![photo_name](example/output1.jpg)
 
-![photo_name](output/online/1edd3166-e302-42f2-8946-a72ec7638290.jpg)
+![photo_name](example/output2.jpg)
 
 
 
