@@ -2,7 +2,8 @@ import argparse
 import os
 import time
 import uuid
-from typing import Union
+from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -20,11 +21,13 @@ from six.moves.urllib.request import urlopen
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 ##### Typing Classes
-Tensor = Union[tf.python.framework.ops.Tensor,
+TENSOR = Union[tf.python.framework.ops.Tensor,
                tf.python.framework.sparse_tensor.SparseTensor,
                tf.python.ops.ragged.ragged_tensor.RaggedTensor]
 
-Detector = tf.python.eager.wrap_function.WrappedFunction
+DETECTOR = tf.python.eager.wrap_function.WrappedFunction
+
+IMAGE = Image.Image
 
 #### Constants
 MODULES = {
@@ -74,7 +77,7 @@ class ObjectDetector:
         """
         Displays the image for visualisation using Matplotlib.
 
-        :param image:
+        :param image: PIL Image Object
         :return: None
         """
         plt.figure(figsize=(12, 8))
@@ -103,20 +106,21 @@ class ObjectDetector:
         print("Processing image...")
         start_time = time.time()
 
-        filename = uuid.uuid4() if url_type == 'online' else url.split('/')[-1].replace('.jpg', '')
-        in_path = f"input/{url_type}/{filename}.jpg"
-
         if url_type == 'online':
             response = urlopen(url)
-            image_data = BytesIO(response.read())  # saving it in memory
-        else:  # local
+            image_data = BytesIO(response.read())
+        else:
             image_data = url
 
         pil_image = Image.open(image_data)
         pil_image = ImageOps.fit(pil_image, (new_width, new_height), Image.ANTIALIAS)
         pil_image_rgb = pil_image.convert("RGB")
-        pil_image_rgb.save(in_path, format="JPEG", quality=90)
-        print(f"Image downloaded to {in_path}")
+
+        filename = str(uuid.uuid4()) if url_type == 'online' else Path(url).stem
+        path_in = f"input/{url_type}/{filename}.jpg"
+
+        pil_image_rgb.save(path_in, format="JPEG", quality=90)
+        print(f"Image downloaded to {path_in}")
 
         end_time = time.time()
         print(f"Download time: {end_time - start_time}")
@@ -125,7 +129,8 @@ class ObjectDetector:
             self.display_image(pil_image)
 
         print("Image successfully processed\n")
-        return in_path
+
+        return path_in
 
     @staticmethod
     def draw_bounding_box_on_image(image: Image,
@@ -235,7 +240,7 @@ class ObjectDetector:
         return image
 
     @staticmethod
-    def load_img(path: str) -> Tensor:
+    def load_img(path: str) -> TENSOR:
         """
         Loads the image from a file path and converts it into a Tensor.
 
@@ -247,7 +252,7 @@ class ObjectDetector:
 
         return img
 
-    def run_detector(self, detector: Detector, path: str) -> None:
+    def run_detector(self, detector: DETECTOR, path: str) -> Tuple[IMAGE, str]:
         """
         Runs the detector process.
 
@@ -280,13 +285,16 @@ class ObjectDetector:
 
         self.display_image(image_with_boxes)
 
-    def detect_objects(self, image_url: str, *, url_type: str) -> None:
+        return im, path_out
+
+    def detect_objects(self, image_url: str, *, url_type: str, is_flask: bool = False) -> Optional[Tuple[IMAGE, str]]:
         """
         Entry point for the Object Detection where user specifies the image url and url type.
 
         :param image_url: String representing the file path of the image
         :param url_type: String representing the type of image url. Can be either 'online' or 'local'
-        :return: None
+        :param is_flask: Boolean representing if Image and file path should be returned for the Flask app
+        :return: Image with bounding boxes and file path to Image if is_flask is True, else None
         """
         url_types = ['online', 'local']
 
@@ -294,7 +302,10 @@ class ObjectDetector:
             raise AssertionError("url_type specified is not recognised. Please use either 'online' or 'local'")
 
         image_path = self.download_and_resize_image(image_url, url_type, 640, 480)
-        self.run_detector(self.detector, image_path)
+
+        im, path_out = self.run_detector(self.detector, image_path)
+
+        return im, path_out if is_flask else None
 
 
 if __name__ == '__main__':
@@ -304,5 +315,4 @@ if __name__ == '__main__':
     args = vars(ap.parse_args())
 
     model = ObjectDetector()
-    # model.detect_objects("https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSXrpeNub8d6eoVdvLJXJX3ffO2Qicrmez_UA&usqp=CAU", url_type='online')
     model.detect_objects(args['image'], url_type=args['type'])
