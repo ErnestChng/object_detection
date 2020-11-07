@@ -1,7 +1,7 @@
 import argparse
 import os
-import tempfile
 import time
+import uuid
 from typing import Union
 
 import matplotlib.pyplot as plt
@@ -98,13 +98,13 @@ class ObjectDetector:
         :param new_width: Integer representing the width of the resized PIL image
         :param new_height: Integer representing the height of the resized PIL image
         :param display: Boolean value. If True, displays the image.
-        :return:
+        :return: String representing the file path of the image downloaded in the temp folder
         """
         print("Processing image...")
         start_time = time.time()
 
-        # making a new temp directory
-        _, filename = tempfile.mkstemp(suffix=".jpg")
+        filename = uuid.uuid4() if url_type == 'online' else url.split('/')[-1].replace('.jpg', '')
+        in_path = f"input/{url_type}/{filename}.jpg"
 
         if url_type == 'online':
             response = urlopen(url)
@@ -115,8 +115,8 @@ class ObjectDetector:
         pil_image = Image.open(image_data)
         pil_image = ImageOps.fit(pil_image, (new_width, new_height), Image.ANTIALIAS)
         pil_image_rgb = pil_image.convert("RGB")
-        pil_image_rgb.save(filename, format="JPEG", quality=90)
-        print(f"Image downloaded to {filename}")
+        pil_image_rgb.save(in_path, format="JPEG", quality=90)
+        print(f"Image downloaded to {in_path}")
 
         end_time = time.time()
         print(f"Download time: {end_time - start_time}")
@@ -125,7 +125,7 @@ class ObjectDetector:
             self.display_image(pil_image)
 
         print("Image successfully processed\n")
-        return filename
+        return in_path
 
     @staticmethod
     def draw_bounding_box_on_image(image: Image,
@@ -273,6 +273,11 @@ class ObjectDetector:
                                            result["detection_class_entities"],
                                            result["detection_scores"])
 
+        im = Image.fromarray(image_with_boxes)
+        path_out = path.replace('input', 'output')
+        im.save(path_out, format="JPEG", quality=90)
+        print(f"Image downloaded to {path_out}")
+
         self.display_image(image_with_boxes)
 
     def detect_objects(self, image_url: str, *, url_type: str) -> None:
@@ -299,4 +304,5 @@ if __name__ == '__main__':
     args = vars(ap.parse_args())
 
     model = ObjectDetector()
+    # model.detect_objects("https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSXrpeNub8d6eoVdvLJXJX3ffO2Qicrmez_UA&usqp=CAU", url_type='online')
     model.detect_objects(args['image'], url_type=args['type'])
