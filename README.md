@@ -1,6 +1,6 @@
 # Object Detection
 
-DMY1411T Assignment 2 - Object Detection.
+DMY1401T Assignment 2 - Object Detection.
 
 ## Description
 Makes use of Tensorflow's pre-trained model mobilenet to detect and draw bounding boxes around 2 precise classes "Man" 
@@ -32,9 +32,9 @@ and -t which specifies the type (either online or local).
 
 `python object_detector.py -i "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSXrpeNub8d6eoVdvLJXJX3ffO2Qicrmez_UA&usqp=CAU" -t online`
 
-### Flask App
-Launches a basic Flask App. The detect route requires users to specify ?url= which specifies the local/online file
- path to the image file and ?url_type= which specifies the type (either online or local).
+### Service Tool
+Launches a basic Flask app. Users are required to specify 2 key/value pairs '?url=' which specifies the local/online
+ file path to the image file and '?url_type=' which specifies the type (either online or local) in the route.
 
 ###### To launch the Flask app
 
