@@ -6,7 +6,7 @@ DMY1401T Assignment 2 - Object Detection.
 Makes use of Tensorflow's pre-trained model mobilenet to detect and draw bounding boxes around 2 precise classes "Man" 
 and "Woman".
 
-A GUI or Command Line Tool can be used (see below for Usage).
+A GUI, Command Line or Service Tool can be used (see below for Usage).
 
 ## Setup
 `pip install -r requirements.txt`
