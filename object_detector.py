@@ -9,11 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
-from PIL import Image
-from PIL import ImageColor
-from PIL import ImageDraw
-from PIL import ImageFont
-from PIL import ImageOps
+from PIL import Image, ImageColor, ImageDraw, ImageFont, ImageOps
 from six import BytesIO
 from six.moves.urllib.request import urlopen
 

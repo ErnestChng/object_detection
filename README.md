@@ -53,6 +53,3 @@ Launches a basic Flask app. Users are required to specify 2 key/value pairs '?ur
 ![photo_name](example/output1.jpg)
 
 ![photo_name](example/output2.jpg)
-
-
-

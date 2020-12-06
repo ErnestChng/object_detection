@@ -1,6 +1,5 @@
-import tkinter as tk
-from tkinter import *
-from tkinter import filedialog
+from tkinter import BOTTOM, Button, Label, filedialog
+from tkinter.tix import Tk
 
 from PIL import Image, ImageTk
 
@@ -17,7 +16,7 @@ class GUI:
         Constructor for the GUI. Runs a basic setup of its components
         and instantiates an ObjectDetector object.
         """
-        self.top = tk.Tk()
+        self.top = Tk()
         self.top.geometry('800x600')
         self.top.title('Object Detection')
         self.top.configure(background='#CDCDCD')
