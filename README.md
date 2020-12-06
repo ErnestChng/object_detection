@@ -1,6 +1,6 @@
 # Object Detection
 
-DMY1401T Assignment 2 - Object Detection.
+DMY1401T Machine Learning in Practice Assignment 2 - Object Detection.
 
 ## Description
 Makes use of Tensorflow's pre-trained model mobilenet to detect and draw bounding boxes around 2 precise classes "Man" 
